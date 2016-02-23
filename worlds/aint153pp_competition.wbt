@@ -9,8 +9,8 @@ WorldInfo {
   northDirection 0 0 -1
 }
 Viewpoint {
-  orientation -0.0534756 0.886998 0.458666 2.67493
-  position 13.4561 32.7918 -20.8046
+  orientation 0.0431416 0.879429 0.474071 3.05537
+  position 2.11426 39.1792 -29.399
 }
 Background {
   skyColor [
@@ -883,9 +883,24 @@ DEF FLOOR Solid {
   locked TRUE
 }
 Pioneer3dxAINT {
-  translation 0 0.0975 -8.5
-  rotation 0 1 0 3.14
-  controller "kinect"
+  hidden position_0_0 -6.52746e-11
+  hidden position_0_1 -2.96651e-11
+  hidden position_0_2 -2.95763e-11
+  hidden translation_1 -7.15174e-11 -0.001167 0.191843
+  hidden rotation_1 -0.0181968 0.999834 -1.66444e-06 1.75028e-05
+  hidden position_1_0 -0.063893
+  hidden translation_2 -5.59381e-11 -0.052073 0.0128422
+  hidden rotation_2 1 -2.59602e-11 4.53519e-10 -0.0638919
+  hidden translation_4 -0.165 -6.44937e-05 6.39201e-05
+  hidden rotation_4 -0.120291 -0.0287205 -0.992323 -2.96651e-11
+  hidden translation_9 0.165032 -6.45039e-05 6.39202e-05
+  hidden rotation_9 -0.0932594 -0.0288059 -0.995225 -2.9576e-11
+  hidden position_29_0 -1.77636e-15
+  hidden translation_30 -1.23832e-12 0.0499984 4.31541e-08
+  hidden rotation_30 0.989786 0.135006 -0.0457999 -1.61943e-15
+  translation 4.5729e-06 0.0958811 -8.50282
+  rotation 1.19099e-05 0.999896 -0.0144541 3.14
+  controller "inno"
   controllerArgs "1 1 1 1"
   extensionSlot [
     Compass {
