@@ -13,3 +13,11 @@
 #include <webots/distance_sensor.h>
 #include <stdio.h>
 #include <math.h>
+
+// Main controller
+int main(int argc, char **argv)
+{
+
+    // Final return
+    return 0;
+}
