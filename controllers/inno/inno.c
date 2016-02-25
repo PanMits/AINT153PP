@@ -14,7 +14,7 @@
 
 // Macros
 #define TIME_STEP 64
-#define MAX_SPEED 3.0
+#define MAX_SPEED 5.24
 #define PI 3.14159265
 #define DESIRED_ANGLE -90.0
 
@@ -31,6 +31,9 @@ int main(int argc, char **argv)
   // Initialize webots
   wb_robot_init();
   
+  // GPS tick data
+  int red_line_tick = 0;
+  int green_circle_tick = 0;
   
   // Get robot devices
   WbDeviceTag left_wheel  = wb_robot_get_device("left_wheel");
@@ -48,11 +51,15 @@ int main(int argc, char **argv)
   WbDeviceTag compass = wb_robot_get_device("compass");
   wb_compass_enable(compass, TIME_STEP);
   
+  // Get the GPS data
+  WbDeviceTag gps = wb_robot_get_device("gps");
+  wb_gps_enable(gps, TIME_STEP);
+  
   // Prepare robot for velocity commands
   wb_motor_set_position(left_wheel, INFINITY);
   wb_motor_set_position(right_wheel, INFINITY);
   wb_motor_set_velocity(left_wheel, 0.0);
-  wb_motor_set_velocity(right_wheel,0.0);
+  wb_motor_set_velocity(right_wheel, 0.0);
   
   
   // Begin in mode 0, moving forward
@@ -70,12 +77,16 @@ int main(int argc, char **argv)
     const double *compass_val = wb_compass_get_values(compass);
     double compass_angle = convert_bearing_to_degrees(compass_val);
     
+    // Read in the GPS data
+    const double *gps_val = wb_gps_get_values(gps);
+    
     // Debug
     printf("Sensor input values:\n");
     printf("- Forward left: %.2f.\n",forward_left_value);
     printf("- Forward right: %.2f.\n",forward_right_value);
     printf("- Right: %.2f.\n",left_value);
     printf("- Compass angle (degrees): %.2f.\n", compass_angle);
+    printf("- GPS values (x,z): %.2f, %.2f.\n", gps_val[0], gps_val[2]);
     
     // Send acuator commands
     double left_speed, right_speed;
@@ -92,8 +103,23 @@ int main(int argc, char **argv)
      * 0: Finding initial correct angle
      * 1: Moving forward
      * 2: Wall following
-     * 3: Finding green circle
+     * 3: Rotating after correct point
+     * 4: Finding green circle + moving on
      */
+     
+    // If it reaches GPS coords past the red line
+    if (gps_val[2] > 8.0) {
+      
+      // Up the GPS tick
+      red_line_tick = red_line_tick + 1;
+      
+    }
+    
+    // If the red line tick tolerance reaches
+    // more than 10 per cycle, begin mode 3
+    if (red_line_tick > 10) {
+      mode = 3;
+    }
     
     if (mode == 0) { // Mode 0: Find correct angle
     
@@ -164,6 +190,42 @@ int main(int argc, char **argv)
           
         }
         
+      }
+      
+    } else if (mode == 3) {
+    
+      // Once arrived, turn to the right
+      printf("Finding correct angle (again)\n");
+      
+      if (compass_angle < (90 - 1.0)) {
+      
+        // Turn right
+        left_speed = MAX_SPEED;
+        right_speed = MAX_SPEED / 1.75;
+      
+      } else if (compass_angle > (90 + 1.0)) {
+        
+        // Turn left
+        left_speed = MAX_SPEED / 1.75;
+        right_speed = MAX_SPEED;
+      
+      } else {
+      
+        // Reached the desired angle, move in a straight line
+        if (green_circle_tick > 10) {
+          left_speed = 0;
+          right_speed = 0;
+          
+          
+        } else {
+          left_speed = MAX_SPEED;
+          right_speed = MAX_SPEED;
+        }
+        
+        if (gps_val[0] < -3.2) {
+          green_circle_tick = green_circle_tick + 1;
+        }
+      
       }
       
     }
