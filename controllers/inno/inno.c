@@ -41,8 +41,8 @@ int main(int argc, char **argv)
   wb_distance_sensor_enable(forward_left_sensor, TIME_STEP);
   WbDeviceTag forward_right_sensor = wb_robot_get_device("so4");
   wb_distance_sensor_enable(forward_right_sensor, TIME_STEP);
-  WbDeviceTag right_sensor = wb_robot_get_device("so6");
-  wb_distance_sensor_enable(right_sensor, TIME_STEP);
+  WbDeviceTag left_sensor = wb_robot_get_device("so1");
+  wb_distance_sensor_enable(left_sensor, TIME_STEP);
   
   // Get the compass
   WbDeviceTag compass = wb_robot_get_device("compass");
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     // Get the sensor data
     double forward_left_value = wb_distance_sensor_get_value(forward_left_sensor);
     double forward_right_value = wb_distance_sensor_get_value(forward_right_sensor);
-    double right_value = wb_distance_sensor_get_value(right_sensor);
+    double left_value = wb_distance_sensor_get_value(left_sensor);
       
     // Read compass and convert to angle
     const double *compass_val = wb_compass_get_values(compass);
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     printf("Sensor input values:\n");
     printf("- Forward left: %.2f.\n",forward_left_value);
     printf("- Forward right: %.2f.\n",forward_right_value);
-    printf("- Right: %.2f.\n",right_value);
+    printf("- Right: %.2f.\n",left_value);
     printf("- Compass angle (degrees): %.2f.\n", compass_angle);
     
     // Send acuator commands
@@ -134,26 +134,26 @@ int main(int argc, char **argv)
     else if (mode == 2) { // Mode 2: Wall following
         
       if ((forward_right_value > 200) || (forward_left_value > 200)) {
-        printf("Backing up and turning left.\n"); 
+        printf("Backing up and turning right.\n"); 
         
-        left_speed = - MAX_SPEED / 2.0;
-        right_speed = MAX_SPEED / 4.0;
+        left_speed = MAX_SPEED / 4.0;
+        right_speed = - MAX_SPEED / 2.0;
       }
       else {
       
-        if (right_value > 300) {
-          printf("Turning left away from wall.\n"); 
+        if (left_value > 300) {
+          printf("Turning right away from wall.\n"); 
           
-          left_speed = MAX_SPEED / 1.75;
-          right_speed = MAX_SPEED;
+          left_speed = MAX_SPEED;
+          right_speed = MAX_SPEED / 1.75;
         } 
         else {
         
-          if (right_value < 200) {
-            printf("Turning right towards wall.\n");
+          if (left_value < 200) {
+            printf("Turning left towards wall.\n");
               
-            left_speed = MAX_SPEED;
-            right_speed = MAX_SPEED / 1.75;
+            left_speed = MAX_SPEED / 1.75;
+            right_speed = MAX_SPEED;
           } 
           else {
             printf("Moving forward along wall.\n");
