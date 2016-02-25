@@ -98,6 +98,25 @@ int main(int argc, char **argv)
     if (mode == 0) { // Mode 0: Find correct angle
     
       printf("Finding correct angle\n");
+      
+      if (compass_angle < (DESIRED_ANGLE - 1.0)) {
+      
+        // Turn right
+        left_speed = MAX_SPEED;
+        right_speed = 0;
+      
+      } else if (compass_angle > (DESIRED_ANGLE + 1.0)) {
+        
+        // Turn left
+        left_speed = 0;
+        right_speed = MAX_SPEED;
+      
+      } else {
+      
+        // Reached the desired angle, move in a straight line
+        mode = 1;
+      
+      }
     
     } else if(mode == 1) { // Mode 1: Move forward
     
